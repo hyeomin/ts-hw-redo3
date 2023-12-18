@@ -13,12 +13,12 @@ const todoSlice = createSlice({
             state.todoList.push(action.payload);
         },
         deleteTodo: (state, action) => {
-            state.todoList.filter((item) => {
+            state.todoList = state.todoList.filter((item) => {
                 return item.id !== action.payload;
             });
         },
         updateTodo: (state, action) => {
-            state.todoList.map((item) => {
+            state.todoList = state.todoList.map((item) => {
                 if (item.id === action.payload) {
                     return { ...item, isDone: !item.isDone };
                 } else return item;
