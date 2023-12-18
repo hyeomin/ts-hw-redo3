@@ -1,25 +1,23 @@
-import axios from "axios";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { TodoListProps } from "../types/TodoTypes";
+import { AppDispatch, useAppSelector } from "../redux/config/configStore";
+import { __deleteTodo, __updatedTodo } from "../redux/modules/todoSlice";
 
-function TodoList({ todoList, fetchTodo, isDone }: TodoListProps) {
+function TodoList({ isDone }: { isDone: boolean }) {
+    const dispatch: AppDispatch = useDispatch();
+
+    const todoList = useAppSelector((state) => state.todoList);
+    console.log("과연", todoList);
+
     const onDeleteHandler = async (id: string) => {
         const confirmation = window.confirm("삭제하시겠습니까?");
         if (confirmation) {
-            try {
-                await axios.delete(`http://localhost:4000/todos/${id}`);
-                fetchTodo();
-            } catch (error) {
-                console.log("Error:", error);
-            }
+            dispatch(__deleteTodo(id));
         } else return;
     };
 
     const onUpdateStatusHandler = async (id: string, isDone: boolean) => {
-        await axios.patch(`http://localhost:4000/todos/${id}`, {
-            isDone: !isDone,
-        });
-        fetchTodo();
+        dispatch(__updatedTodo({ id, isDone }));
     };
 
     if (!todoList) {

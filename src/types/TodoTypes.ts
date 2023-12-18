@@ -13,4 +13,11 @@ export type TodoListProps = {
 
 export interface TodoState {
     todoList: Todo[];
+    isLoading: boolean;
+    isError: boolean;
 }
+
+export type UpdatePayload = {
+    id: string;
+    isDone: boolean;
+};
