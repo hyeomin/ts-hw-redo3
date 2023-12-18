@@ -86,6 +86,11 @@ function App() {
                     fetchTodo={fetchTodo}
                     isDone={false}
                 />
+                <TodoList
+                    todoList={todoList}
+                    fetchTodo={fetchTodo}
+                    isDone={true}
+                />
             </InnterContainer>
         </OuterContainer>
     );

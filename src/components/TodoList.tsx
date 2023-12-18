@@ -29,26 +29,38 @@ function TodoList({ todoList, fetchTodo, isDone }: TodoListProps) {
     return (
         <CardContainer className="card-container">
             <h2>{isDone ? "Done" : "In Progress"}</h2>
-            {todoList.map((item) => {
-                return (
-                    <CardWrapper className="single-card-wrapper" key={item.id}>
-                        <h3>{item.title}</h3>
-                        <p>{item.content}</p>
-                        <ButtonContainer>
-                            <button
-                                onClick={() =>
-                                    onUpdateStatusHandler(item.id, item.isDone)
-                                }
-                            >
-                                {item.isDone ? "취소" : "완료"}
-                            </button>
-                            <button onClick={() => onDeleteHandler(item.id)}>
-                                삭제
-                            </button>
-                        </ButtonContainer>
-                    </CardWrapper>
-                );
-            })}
+            {todoList
+                .filter((item) => {
+                    return item.isDone === isDone;
+                })
+                .map((item) => {
+                    return (
+                        <CardWrapper
+                            className="single-card-wrapper"
+                            key={item.id}
+                        >
+                            <h3>{item.title}</h3>
+                            <p>{item.content}</p>
+                            <ButtonContainer>
+                                <button
+                                    onClick={() =>
+                                        onUpdateStatusHandler(
+                                            item.id,
+                                            item.isDone
+                                        )
+                                    }
+                                >
+                                    {item.isDone ? "취소" : "완료"}
+                                </button>
+                                <button
+                                    onClick={() => onDeleteHandler(item.id)}
+                                >
+                                    삭제
+                                </button>
+                            </ButtonContainer>
+                        </CardWrapper>
+                    );
+                })}
         </CardContainer>
     );
 }
