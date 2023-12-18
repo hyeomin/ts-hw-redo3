@@ -1,9 +1,10 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { v4 } from "uuid";
 import tile from "./assets/tile.png";
 import TodoList from "./components/TodoList";
+import { AppDispatch } from "./redux/config/configStore";
+import { __addTodo, __fetchTodos } from "./redux/modules/todoSlice";
 import { Todo } from "./types/TodoTypes";
 
 function App() {
@@ -11,18 +12,10 @@ function App() {
     const [content, setContent] = useState("");
     const [todoList, setTodoList] = useState<Todo[]>([]);
 
-    const fetchTodo = async () => {
-        try {
-            const response = await axios.get(`http://localhost:4000/todos`);
-            // console.log("response-->", response.data);
-            setTodoList(response.data);
-        } catch (error) {
-            console.log("Error:", error);
-        }
-    };
+    const dispatch: AppDispatch = useDispatch();
 
     useEffect(() => {
-        fetchTodo();
+        dispatch(__fetchTodos());
     }, []);
 
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,23 +27,14 @@ function App() {
         }
     };
 
-    const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
+    const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const newTodo = {
-            id: v4(),
+        const newTodo: Omit<Todo, "id"> = {
             title,
             content,
             isDone: false,
         };
-
-        try {
-            await axios.post(`http://localhost:4000/todos`, newTodo);
-            fetchTodo();
-            setTitle("");
-            setContent("");
-        } catch (error) {
-            console.log("Error:", error);
-        }
+        dispatch(__addTodo(newTodo));
     };
 
     return (
@@ -81,11 +65,8 @@ function App() {
                     </InputContainer>
                     <button type="submit">추가하기</button>
                 </FormContainer>
-                <TodoList
-                    todoList={todoList}
-                    fetchTodo={fetchTodo}
-                    isDone={false}
-                />
+                <TodoList isDone={false} />
+                <TodoList isDone={true} />
             </InnterContainer>
         </OuterContainer>
     );

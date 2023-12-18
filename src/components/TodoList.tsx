@@ -1,25 +1,23 @@
-import axios from "axios";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { TodoListProps } from "../types/TodoTypes";
+import { AppDispatch, useAppSelector } from "../redux/config/configStore";
+import { __deleteTodo, __updatedTodo } from "../redux/modules/todoSlice";
 
-function TodoList({ todoList, fetchTodo, isDone }: TodoListProps) {
+function TodoList({ isDone }: { isDone: boolean }) {
+    const dispatch: AppDispatch = useDispatch();
+
+    const todoList = useAppSelector((state) => state.todoList);
+    console.log("과연", todoList);
+
     const onDeleteHandler = async (id: string) => {
         const confirmation = window.confirm("삭제하시겠습니까?");
         if (confirmation) {
-            try {
-                await axios.delete(`http://localhost:4000/todos/${id}`);
-                fetchTodo();
-            } catch (error) {
-                console.log("Error:", error);
-            }
+            dispatch(__deleteTodo(id));
         } else return;
     };
 
     const onUpdateStatusHandler = async (id: string, isDone: boolean) => {
-        await axios.patch(`http://localhost:4000/todos/${id}`, {
-            isDone: !isDone,
-        });
-        fetchTodo();
+        dispatch(__updatedTodo({ id, isDone }));
     };
 
     if (!todoList) {
@@ -29,26 +27,38 @@ function TodoList({ todoList, fetchTodo, isDone }: TodoListProps) {
     return (
         <CardContainer className="card-container">
             <h2>{isDone ? "Done" : "In Progress"}</h2>
-            {todoList.map((item) => {
-                return (
-                    <CardWrapper className="single-card-wrapper" key={item.id}>
-                        <h3>{item.title}</h3>
-                        <p>{item.content}</p>
-                        <ButtonContainer>
-                            <button
-                                onClick={() =>
-                                    onUpdateStatusHandler(item.id, item.isDone)
-                                }
-                            >
-                                {item.isDone ? "취소" : "완료"}
-                            </button>
-                            <button onClick={() => onDeleteHandler(item.id)}>
-                                삭제
-                            </button>
-                        </ButtonContainer>
-                    </CardWrapper>
-                );
-            })}
+            {todoList
+                .filter((item) => {
+                    return item.isDone === isDone;
+                })
+                .map((item) => {
+                    return (
+                        <CardWrapper
+                            className="single-card-wrapper"
+                            key={item.id}
+                        >
+                            <h3>{item.title}</h3>
+                            <p>{item.content}</p>
+                            <ButtonContainer>
+                                <button
+                                    onClick={() =>
+                                        onUpdateStatusHandler(
+                                            item.id,
+                                            item.isDone
+                                        )
+                                    }
+                                >
+                                    {item.isDone ? "취소" : "완료"}
+                                </button>
+                                <button
+                                    onClick={() => onDeleteHandler(item.id)}
+                                >
+                                    삭제
+                                </button>
+                            </ButtonContainer>
+                        </CardWrapper>
+                    );
+                })}
         </CardContainer>
     );
 }
