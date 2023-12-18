@@ -1,14 +1,19 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { v4 } from "uuid";
 import tile from "./assets/tile.png";
 import TodoList from "./components/TodoList";
+import { AppDispatch } from "./redux/config/configStore";
+import { addTodo } from "./redux/modules/todoSlice";
 import { Todo } from "./types/TodoTypes";
 
 function App() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [todoList, setTodoList] = useState<Todo[]>([]);
+
+    const dispatch: AppDispatch = useDispatch();
 
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -27,7 +32,7 @@ function App() {
             content,
             isDone: false,
         };
-        setTodoList([...todoList, newTodo]);
+        dispatch(addTodo(newTodo));
     };
 
     return (

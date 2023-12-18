@@ -1,24 +1,21 @@
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
+import { AppDispatch } from "../redux/config/configStore";
+import { deleteTodo, updateTodo } from "../redux/modules/todoSlice";
 import { TodoListProps } from "../types/TodoTypes";
 
 function TodoList({ todoList, setTodoList, isDone }: TodoListProps) {
+    const dispatch: AppDispatch = useDispatch();
+
     const onDeleteHandler = (id: string) => {
         const confirmation = window.confirm("삭제하시겠습니까?");
         if (confirmation) {
-            const newList = todoList.filter((item) => {
-                return item.id !== id;
-            });
-            setTodoList(newList);
+            dispatch(deleteTodo(id));
         } else return;
     };
 
     const onUpdateStatusHandler = (id: string) => {
-        const updatedList = todoList.map((item) => {
-            if (item.id === id) {
-                return { ...item, isDone: !item.isDone };
-            } else return item;
-        });
-        setTodoList(updatedList);
+        dispatch(updateTodo(id));
     };
 
     return (

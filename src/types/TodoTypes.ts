@@ -10,3 +10,7 @@ export type TodoListProps = {
     setTodoList: React.Dispatch<React.SetStateAction<Todo[]>>;
     isDone: boolean;
 };
+
+export interface TodoState {
+    todoList: Todo[];
+}
