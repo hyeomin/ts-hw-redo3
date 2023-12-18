@@ -1,11 +1,12 @@
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { AppDispatch } from "../redux/config/configStore";
+import { AppDispatch, useAppSelector } from "../redux/config/configStore";
 import { deleteTodo, updateTodo } from "../redux/modules/todoSlice";
-import { TodoListProps } from "../types/TodoTypes";
 
-function TodoList({ todoList, setTodoList, isDone }: TodoListProps) {
+function TodoList({ isDone }: { isDone: boolean }) {
     const dispatch: AppDispatch = useDispatch();
+    const todoList = useAppSelector((state) => state.todoList);
+    console.log("과연", todoList);
 
     const onDeleteHandler = (id: string) => {
         const confirmation = window.confirm("삭제하시겠습니까?");
@@ -86,5 +87,10 @@ const ButtonContainer = styled.div`
         padding: 5px;
         border-radius: 5px;
         border-color: transparent;
+        cursor: pointer;
+
+        &:hover {
+            color: gray;
+        }
     }
 `;
