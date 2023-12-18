@@ -1,23 +1,30 @@
-import { useDispatch } from "react-redux";
+import axios from "axios";
 import styled from "styled-components";
-import { AppDispatch, useAppSelector } from "../redux/config/configStore";
-import { deleteTodo, updateTodo } from "../redux/modules/todoSlice";
+import { TodoListProps } from "../types/TodoTypes";
 
-function TodoList({ isDone }: { isDone: boolean }) {
-    const dispatch: AppDispatch = useDispatch();
-    const todoList = useAppSelector((state) => state.todoList);
-    console.log("과연", todoList);
-
-    const onDeleteHandler = (id: string) => {
+function TodoList({ todoList, fetchTodo, isDone }: TodoListProps) {
+    const onDeleteHandler = async (id: string) => {
         const confirmation = window.confirm("삭제하시겠습니까?");
         if (confirmation) {
-            dispatch(deleteTodo(id));
+            try {
+                await axios.delete(`http://localhost:4000/todos/${id}`);
+                fetchTodo();
+            } catch (error) {
+                console.log("Error:", error);
+            }
         } else return;
     };
 
-    const onUpdateStatusHandler = (id: string) => {
-        dispatch(updateTodo(id));
+    const onUpdateStatusHandler = async (id: string, isDone: boolean) => {
+        await axios.patch(`http://localhost:4000/todos/${id}`, {
+            isDone: !isDone,
+        });
+        fetchTodo();
     };
+
+    if (!todoList) {
+        return <div>로딩 중입니다...</div>;
+    }
 
     return (
         <CardContainer className="card-container">
@@ -29,7 +36,9 @@ function TodoList({ isDone }: { isDone: boolean }) {
                         <p>{item.content}</p>
                         <ButtonContainer>
                             <button
-                                onClick={() => onUpdateStatusHandler(item.id)}
+                                onClick={() =>
+                                    onUpdateStatusHandler(item.id, item.isDone)
+                                }
                             >
                                 {item.isDone ? "취소" : "완료"}
                             </button>

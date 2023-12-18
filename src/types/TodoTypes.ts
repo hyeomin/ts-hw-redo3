@@ -5,6 +5,12 @@ export type Todo = {
     isDone: boolean;
 };
 
+export type TodoListProps = {
+    todoList: Todo[];
+    fetchTodo: () => Promise<void>;
+    isDone: boolean;
+};
+
 export interface TodoState {
     todoList: Todo[];
 }

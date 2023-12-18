@@ -1,18 +1,29 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { v4 } from "uuid";
 import tile from "./assets/tile.png";
 import TodoList from "./components/TodoList";
-import { AppDispatch } from "./redux/config/configStore";
-import { addTodo } from "./redux/modules/todoSlice";
+import { Todo } from "./types/TodoTypes";
 
 function App() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    // const [todoList, setTodoList] = useState<Todo[]>([]);
+    const [todoList, setTodoList] = useState<Todo[]>([]);
 
-    const dispatch: AppDispatch = useDispatch();
+    const fetchTodo = async () => {
+        try {
+            const response = await axios.get(`http://localhost:4000/todos`);
+            // console.log("response-->", response.data);
+            setTodoList(response.data);
+        } catch (error) {
+            console.log("Error:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchTodo();
+    }, []);
 
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -23,7 +34,7 @@ function App() {
         }
     };
 
-    const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const newTodo = {
             id: v4(),
@@ -31,7 +42,15 @@ function App() {
             content,
             isDone: false,
         };
-        dispatch(addTodo(newTodo));
+
+        try {
+            await axios.post(`http://localhost:4000/todos`, newTodo);
+            fetchTodo();
+            setTitle("");
+            setContent("");
+        } catch (error) {
+            console.log("Error:", error);
+        }
     };
 
     return (
@@ -57,12 +76,16 @@ function App() {
                             name="content"
                             value={content}
                             onChange={onChangeHandler}
-                            placeholder="제목을 입력하세요"
+                            placeholder="내용을 입력하세요"
                         />
                     </InputContainer>
                     <button type="submit">추가하기</button>
                 </FormContainer>
-                <TodoList isDone={false} />
+                <TodoList
+                    todoList={todoList}
+                    fetchTodo={fetchTodo}
+                    isDone={false}
+                />
             </InnterContainer>
         </OuterContainer>
     );
