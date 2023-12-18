@@ -1,10 +1,24 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { AppDispatch } from "../redux/config/configStore";
 import { deleteTodo, updateTodo } from "../redux/modules/todoSlice";
-import { TodoListProps } from "../types/TodoTypes";
+import { Todo } from "../types/TodoTypes";
 
-function TodoList({ todoList, setTodoList, isDone }: TodoListProps) {
+function TodoList({ isDone }: { isDone: boolean }) {
+    const [todoList, setTodoList] = useState<Todo[]>([]);
+
+    const fetchTodo = async () => {
+        const response = await axios.get(`http://localhost:4000/todos`);
+        console.log("response-->", response.data);
+        setTodoList(response.data);
+    };
+
+    useEffect(() => {
+        fetchTodo();
+    }, []);
+
     const dispatch: AppDispatch = useDispatch();
 
     const onDeleteHandler = (id: string) => {
@@ -17,6 +31,10 @@ function TodoList({ todoList, setTodoList, isDone }: TodoListProps) {
     const onUpdateStatusHandler = (id: string) => {
         dispatch(updateTodo(id));
     };
+
+    if (!todoList) {
+        return <div>로딩 중입니다...</div>;
+    }
 
     return (
         <CardContainer className="card-container">

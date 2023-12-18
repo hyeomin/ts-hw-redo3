@@ -6,12 +6,10 @@ import tile from "./assets/tile.png";
 import TodoList from "./components/TodoList";
 import { AppDispatch } from "./redux/config/configStore";
 import { addTodo } from "./redux/modules/todoSlice";
-import { Todo } from "./types/TodoTypes";
 
 function App() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [todoList, setTodoList] = useState<Todo[]>([]);
 
     const dispatch: AppDispatch = useDispatch();
 
@@ -58,16 +56,12 @@ function App() {
                             name="content"
                             value={content}
                             onChange={onChangeHandler}
-                            placeholder="제목을 입력하세요"
+                            placeholder="내용을 입력하세요"
                         />
                     </InputContainer>
                     <button type="submit">추가하기</button>
                 </FormContainer>
-                <TodoList
-                    todoList={todoList}
-                    setTodoList={setTodoList}
-                    isDone={false}
-                />
+                <TodoList isDone={false} />
             </InnterContainer>
         </OuterContainer>
     );
